@@ -5,6 +5,7 @@ namespace App\Http\Controllers\User;
 use App\Helper\ApiResponse;
 use App\Helper\PaginationFormatter;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\User\UserBulkRequest;
 use App\Http\Requests\User\UserRequest;
 use App\Http\Resources\Auth\UserResource;
 use App\Models\User;
@@ -47,5 +48,11 @@ class UserController extends Controller
     {
         $this->service->delete($user);
         return ApiResponse::success([],"User Deleted successfully" , 204);
+    }
+
+    public function storeBulk(UserBulkRequest $request)
+    {
+        $this->service->createBulk($request->validated());
+        return ApiResponse::success([],"Users created successfully",201);
     }
 }
