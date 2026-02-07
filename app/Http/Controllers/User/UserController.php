@@ -52,7 +52,7 @@ class UserController extends Controller
 
     public function storeBulk(UserBulkRequest $request)
     {
-        $this->service->createBulk($request->validated());
-        return ApiResponse::success([],"Users created successfully",201);
+        $response = $this->service->createBulk($request->validated());
+        return ApiResponse::success($response,"Users created successfully",201);
     }
 }
