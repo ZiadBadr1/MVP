@@ -2,7 +2,9 @@
 
 namespace App\Services\User;
 
+use App\Events\UsersBulkInserted;
 use App\Models\User;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
@@ -36,10 +38,9 @@ class UserService
     public function createBulk(array $data): array
     {
         $users = $this->prepareUsers($data['users']);
-
         try {
-            $this->insertUsers($users);
-
+            $ids = $this->insertUsers($users);
+            event(new UsersBulkInserted($ids, Auth::id()));
             return [
                 'success' => true,
                 'inserted_count' => $users->count(),
@@ -68,12 +69,22 @@ class UserService
         ]);
     }
 
-    private function insertUsers($users): void
+
+    private function insertUsers($users): array
     {
-        $users->chunk(500)->each(function ($chunk) {
-            DB::transaction(function () use ($chunk) {
-                User::insert($chunk->toArray());
-            });
+        $insertedIds = [];
+
+        $users->chunk(500)->each(function ($chunk) use (&$insertedIds) {
+
+            User::insert($chunk->toArray());
+
+            $ids = User::whereIn('email', $chunk->pluck('email'))
+                ->pluck('id')
+                ->toArray();
+
+            $insertedIds = array_merge($insertedIds, $ids);
         });
+
+        return $insertedIds;
     }
 }
