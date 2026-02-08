@@ -2,15 +2,14 @@
 
 namespace App\Http\Controllers\User;
 
+use App\Events\UserCreated;
 use App\Helper\ApiResponse;
-use App\Helper\PaginationFormatter;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\User\UserBulkRequest;
 use App\Http\Requests\User\UserRequest;
 use App\Http\Resources\Auth\UserResource;
 use App\Models\User;
 use App\Services\User\UserService;
-use Illuminate\Http\Request;
 
 class UserController extends Controller
 {
@@ -30,6 +29,7 @@ class UserController extends Controller
     public function store(UserRequest $request)
     {
         $user = $this->service->create($request->validated());
+        UserCreated::dispatch($user);
         return ApiResponse::success(new UserResource($user),"User created successfully",201);
     }
 
