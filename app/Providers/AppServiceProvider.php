@@ -4,6 +4,7 @@ namespace App\Providers;
 
 use App\Models\User;
 use App\Observers\ModelActivityObserver;
+use App\Observers\StatisticObserver;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
@@ -22,5 +23,6 @@ class AppServiceProvider extends ServiceProvider
     public function boot(): void
     {
         User::observe(ModelActivityObserver::class);
+        User::observe(StatisticObserver::class);
     }
 }
