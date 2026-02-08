@@ -3,6 +3,7 @@
 namespace App\Services\User;
 
 use App\Events\UsersBulkInserted;
+use App\Jobs\SendBulkWelcomeEmails;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -40,7 +41,7 @@ class UserService
         $users = $this->prepareUsers($data['users']);
         try {
             $ids = $this->insertUsers($users);
-            event(new UsersBulkInserted($ids, Auth::id()));
+            UsersBulkInserted::dispatch($ids, Auth::id());
             return [
                 'success' => true,
                 'inserted_count' => $users->count(),

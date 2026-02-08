@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Observer;
+namespace App\Observers;
 
 use App\Models\ActivityLog;
 use Illuminate\Support\Facades\Auth;

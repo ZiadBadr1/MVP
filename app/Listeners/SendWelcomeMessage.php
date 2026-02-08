@@ -6,11 +6,12 @@ use App\Events\UserCreated;
 use App\Models\MessageLog;
 use App\Notifications\WelcomeNotification;
 use Illuminate\Contracts\Queue\ShouldQueue;
+use Illuminate\Foundation\Queue\Queueable;
 use Illuminate\Queue\InteractsWithQueue;
 
 class SendWelcomeMessage implements ShouldQueue
 {
-    use InteractsWithQueue;
+    use InteractsWithQueue, Queueable;
     /**
      * Create the event listener.
      */
