@@ -35,6 +35,9 @@ cp .env.example .env
 # Generate app key
 php artisan key:generate
 
+# Run Migration
+php artisan migrate
+
 # Start the development server
 php artisan serve
 
