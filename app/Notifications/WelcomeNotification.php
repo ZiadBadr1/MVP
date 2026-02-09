@@ -24,7 +24,7 @@ class WelcomeNotification extends Notification implements ShouldQueue
      *
      * @return array<int, string>
      */
-    public function via(object $notifiable): array
+    public function via(): array
     {
         return ['mail'];
     }
@@ -45,7 +45,7 @@ class WelcomeNotification extends Notification implements ShouldQueue
      *
      * @return array<string, mixed>
      */
-    public function toArray(object $notifiable): array
+    public function toArray(): array
     {
         return [
             //

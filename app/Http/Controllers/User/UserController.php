@@ -6,19 +6,22 @@ use App\Events\UserCreated;
 use App\Helper\ApiResponse;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\User\UserBulkRequest;
+use App\Http\Requests\User\UserBulkRequestV2;
 use App\Http\Requests\User\UserRequest;
 use App\Http\Resources\Auth\UserResource;
+use App\Http\Resources\User\BulkUserImportResource;
 use App\Models\User;
+use App\Services\User\BulkUserService;
 use App\Services\User\UserService;
 
 class UserController extends Controller
 {
-    protected UserService $service;
 
-    public function __construct(UserService $service)
-    {
-        $this->service = $service;
-    }
+    public function __construct(
+        protected UserService $service,
+        protected BulkUserService $bulkService,
+    )
+    {}
 
     public function index()
     {
@@ -50,9 +53,14 @@ class UserController extends Controller
         return ApiResponse::success([],"User Deleted successfully" , 204);
     }
 
-    public function storeBulk(UserBulkRequest $request)
+    public function storeBulkV1(UserBulkRequest $request)
     {
-        $response = $this->service->createBulk($request->validated());
+        $response = $this->bulkService->createBulk($request->validated());
         return ApiResponse::success($response,"Users created successfully",201);
+    }
+    public function storeBulkV2(UserBulkRequestV2 $request)
+    {
+        $response = $this->bulkService->processBulkCreation($request->validated());
+        return ApiResponse::success(new BulkUserImportResource($response),"Users created successfully",201);
     }
 }

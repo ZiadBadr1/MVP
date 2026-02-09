@@ -13,7 +13,8 @@ Route::prefix('/v1')->group(function () {
         Route::post('/logout',  [AuthController::class, 'logout']);
 
         Route::apiResource("users", UserController::class);
-        Route::post('users-bulk', [UserController::class, 'storeBulk']);
+        Route::post('users-bulk', [UserController::class, 'storeBulkV1']);
+        Route::post('users-bulk-v2', [UserController::class, 'storeBulkV2']);
     });
 
 });

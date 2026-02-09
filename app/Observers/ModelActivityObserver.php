@@ -19,7 +19,7 @@ class ModelActivityObserver
 
     public function deleted($model): void
     {
-        $this->logActivity($model, $this->getActionType($model, 'deleted'), $model->getAttributes());
+//        $this->logActivity($model, $this->getActionType($model, 'deleted'), $model->getAttributes());
     }
 
     protected function logActivity($model, string $actionType, array $oldData = [], array $newData = []):void
