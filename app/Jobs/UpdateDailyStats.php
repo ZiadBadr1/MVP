@@ -8,6 +8,7 @@ use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Foundation\Queue\Queueable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
+use Illuminate\Support\Facades\DB;
 
 class UpdateDailyStats implements ShouldQueue
 {
@@ -27,8 +28,9 @@ class UpdateDailyStats implements ShouldQueue
     {
         $date = now()->toDateString();
 
-        DailyStatistic::firstOrCreate([
-            'date' => $date,
-        ])->increment($this->column);
+        DailyStatistic::updateOrInsert(
+            ['date' => $date],
+            ['column' => DB::raw('column + 1')]
+        );
     }
 }

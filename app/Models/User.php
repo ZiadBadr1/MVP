@@ -2,12 +2,15 @@
 
 namespace App\Models;
 
-// use Illuminate\Contracts\Auth\MustVerifyEmail;
+use App\Observers\ModelActivityObserver;
+use App\Observers\StatisticObserver;
+use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Tymon\JWTAuth\Contracts\JWTSubject;
 
+#[ObservedBy([ModelActivityObserver::class, StatisticObserver::class])]
 class User extends Authenticatable implements JWTSubject
 {
     use HasFactory, Notifiable;
