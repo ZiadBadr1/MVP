@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Auth;
 
+use App\Events\UserCreated;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Auth\LoginRequest;
 use App\Http\Requests\Auth\ReqisterRequest;
@@ -34,7 +35,7 @@ class AuthController extends Controller
     public function register(ReqisterRequest $request)
     {
         $user = $this->authService->register($request->validated());
-
+        UserCreated::dispatch($user);
         return ApiResponse::success(
             new UserResource($user),
             'User Registered Successfully',

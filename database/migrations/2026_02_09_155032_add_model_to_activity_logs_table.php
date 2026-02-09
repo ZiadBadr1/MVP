@@ -11,12 +11,8 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('activity_logs', function (Blueprint $table) {
-            $table->id();
-            $table->string('action_type');
-            $table->foreignId('user_id')->nullable()->constrained('users')->cascadeOnDelete();
-            $table->json('metadata')->nullable();
-            $table->timestamps();
+        Schema::table('activity_logs', function (Blueprint $table) {
+            $table->string('model')->nullable();
         });
     }
 
@@ -25,6 +21,8 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('activity_logs');
+        Schema::table('activity_logs', function (Blueprint $table) {
+            $table->dropColumn('model');
+        });
     }
 };

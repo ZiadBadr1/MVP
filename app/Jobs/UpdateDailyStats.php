@@ -30,7 +30,7 @@ class UpdateDailyStats implements ShouldQueue
 
         DailyStatistic::updateOrInsert(
             ['date' => $date],
-            ['column' => DB::raw('column + 1')]
+            [$this->column => DB::raw("`{$this->column}` + 1")]
         );
     }
 }

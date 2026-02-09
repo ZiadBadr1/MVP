@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\Observers\ModelActivityObserver;
 use App\Observers\StatisticObserver;
+use App\Traits\HasSensitiveLogData;
 use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
@@ -14,6 +15,7 @@ use Tymon\JWTAuth\Contracts\JWTSubject;
 class User extends Authenticatable implements JWTSubject
 {
     use HasFactory, Notifiable;
+    use HasSensitiveLogData;
 
     /**
      * The attributes that are mass assignable.
@@ -66,5 +68,12 @@ class User extends Authenticatable implements JWTSubject
     public function getJWTCustomClaims()
     {
         return [];
+    }
+
+    public function getSensitiveLogData(): array
+    {
+        return [
+            'password'
+        ];
     }
 }
