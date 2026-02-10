@@ -22,8 +22,8 @@ class AuthController extends Controller
     {
         $result = $this->authService->login($request->validated());
 
-        if (isset($result['error'])) {
-            return ApiResponse::error([], $result['error'], 400);
+        if (isset($result['success'])) {
+            return ApiResponse::error($result['message']);
         }
 
         return ApiResponse::success(

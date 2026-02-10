@@ -14,10 +14,9 @@ class ActivityLogger
 
         ActivityLog::create([
             'action_type' => strtoupper(class_basename($model) . '_CREATED'),
-            'user_id'     => $model->id,
+            'user_id'     => $performedBy,
             'metadata'    => [
                 'new'          => $data,
-                'performed_by'=> $performedBy,
             ],
         ]);
     }
