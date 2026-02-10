@@ -16,22 +16,12 @@ class BulkUserService
     public function createBulk(array $data): array
     {
         $users = $this->prepareUsers($data['users']);
-        try {
-            $ids = $this->insertUsers($users);
-            UsersBulkInserted::dispatch($ids, Auth::id());
-            return [
-                'success' => true,
-                'inserted_count' => $users->count(),
-            ];
-        } catch (\Throwable $e) {
-            Log::error('Bulk user insert failed', [
-                'error' => $e->getMessage(),
-            ]);
-
-            throw new \RuntimeException(
-                'Failed to insert users. Please check the input data.'
-            );
-        }
+        $ids = $this->insertUsers($users);
+        UsersBulkInserted::dispatch($ids, Auth::id());
+        return [
+            'success' => true,
+            'inserted_count' => $users->count(),
+        ];
     }
     private function prepareUsers(array $users): \Illuminate\Support\Collection
     {
