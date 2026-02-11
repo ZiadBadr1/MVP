@@ -1,5 +1,4 @@
 <?php
-
 use App\Helper\ApiResponse;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
@@ -9,8 +8,10 @@ use Spatie\Permission\Middleware\PermissionMiddleware;
 use Spatie\Permission\Middleware\RoleMiddleware;
 use Spatie\Permission\Middleware\RoleOrPermissionMiddleware;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
+use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException; // أضف ده
 use Illuminate\Validation\ValidationException;
 use Illuminate\Auth\AuthenticationException;
+use Illuminate\Auth\Access\AuthorizationException;
 
 return Application::configure(basePath: dirname(__DIR__))
     ->withRouting(
@@ -32,14 +33,15 @@ return Application::configure(basePath: dirname(__DIR__))
             ValidationException::class,
             AuthenticationException::class,
         ]);
+
         $exceptions->reportable(function (Throwable $e) {
             Log::channel('track')->error($e->getMessage(), [
                 'type' => get_class($e),
                 'file' => $e->getFile(),
                 'line' => $e->getLine(),
-//                'trace' => $e->getTraceAsString(),
             ]);
         });
+
         $exceptions->render(function (UnauthorizedException $e, $request) {
             if ($request->expectsJson()) {
                 return ApiResponse::error(
@@ -49,4 +51,25 @@ return Application::configure(basePath: dirname(__DIR__))
             }
             return null;
         });
+
+        $exceptions->render(function (AuthorizationException $e, $request) {
+            if ($request->expectsJson()) {
+                return ApiResponse::error(
+                    'You do not have the required permissions to perform this action.',
+                    403
+                );
+            }
+            return null;
+        });
+
+        $exceptions->render(function (AccessDeniedHttpException $e, $request) {
+            if ($request->expectsJson()) {
+                return ApiResponse::error(
+                    'You do not have the required permissions to perform this action.',
+                    403
+                );
+            }
+            return null;
+        });
+
     })->create();

@@ -55,12 +55,14 @@ class UserController extends Controller implements HasMiddleware
 
     public function update(UserRequest $request, User $user)
     {
+        $this->authorize('update', $user);
         $user = $this->service->update($user, $request->validated());
         return ApiResponse::success(new UserResource($user), "User Updated successfully");
     }
 
     public function destroy(User $user)
     {
+        $this->authorize('delete', $user);
         $this->service->delete($user);
         return ApiResponse::success([], "User Deleted successfully", 204);
     }
