@@ -31,7 +31,9 @@ class AuthService
 
     public function register(array $data)
     {
-        return User::create($data);
+        $user = User::create($data);
+        $user->syncRoles([User::DEFAULTRULE]);
+        return $user;
     }
 
     public function logout(): true

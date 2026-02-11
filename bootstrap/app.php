@@ -1,8 +1,13 @@
 <?php
 
+use App\Helper\ApiResponse;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
+use Spatie\Permission\Exceptions\UnauthorizedException;
+use Spatie\Permission\Middleware\PermissionMiddleware;
+use Spatie\Permission\Middleware\RoleMiddleware;
+use Spatie\Permission\Middleware\RoleOrPermissionMiddleware;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Illuminate\Validation\ValidationException;
 use Illuminate\Auth\AuthenticationException;
@@ -15,7 +20,11 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware) {
-        //
+        $middleware->alias([
+            'role' => RoleMiddleware::class,
+            'permission' => PermissionMiddleware::class,
+            'role_or_permission' => RoleOrPermissionMiddleware::class,
+        ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {
         $exceptions->dontReport([
@@ -30,5 +39,14 @@ return Application::configure(basePath: dirname(__DIR__))
                 'line' => $e->getLine(),
 //                'trace' => $e->getTraceAsString(),
             ]);
+        });
+        $exceptions->render(function (UnauthorizedException $e, $request) {
+            if ($request->expectsJson()) {
+                return ApiResponse::error(
+                    'You do not have the required permissions to perform this action.',
+                    403
+                );
+            }
+            return null;
         });
     })->create();

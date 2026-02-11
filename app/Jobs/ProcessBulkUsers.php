@@ -76,6 +76,7 @@ class ProcessBulkUsers implements ShouldQueue
         return Validator::make($user, [
             'name' => 'required|string|max:255',
             'email' => 'required|email|unique:users,email',
+            'role'  => 'nullable|exists:roles,name',
         ]);
     }
 
@@ -89,6 +90,8 @@ class ProcessBulkUsers implements ShouldQueue
             'password' => $password,
         ]);
         UserCreated::dispatch($user);
+        $roleToAssign = $user['role'] ?? User::DEFAULTRULE;
+        $user->syncRoles([$roleToAssign]);
     }
 
     private function notifyUser(BulkUserImport $bulk):void

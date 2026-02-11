@@ -13,54 +13,67 @@ use App\Http\Resources\User\BulkUserImportResource;
 use App\Models\User;
 use App\Services\User\BulkUserService;
 use App\Services\User\UserService;
+use Illuminate\Http\Request;
+use Illuminate\Routing\Controllers\HasMiddleware;
+use Illuminate\Routing\Controllers\Middleware;
 
-class UserController extends Controller
+class UserController extends Controller implements HasMiddleware
 {
-
     public function __construct(
-        protected UserService $service,
+        protected UserService     $service,
         protected BulkUserService $bulkService,
     )
     {}
 
-    public function index()
+    public static function middleware(): array
     {
-        $users = $this->service->getAll();
-        return ApiResponse::success(UserResource::collection($users),"This is all users");
+        return [
+            new Middleware('auth:api'),
+            new Middleware('permission:create_user', only: ['store', 'storeBulkV1', 'storeBulkV2']),
+            new Middleware('permission:update_user', only: ['update']),
+            new Middleware('permission:delete_user', only: ['destroy']),
+        ];
+    }
+
+    public function index(Request $request)
+    {
+        $users = $this->service->getAll($request->count);
+        return ApiResponse::success($users, "This is all users");
     }
 
     public function store(UserRequest $request)
     {
         $user = $this->service->create($request->validated());
         UserCreated::dispatch($user);
-        return ApiResponse::success(new UserResource($user),"User created successfully",201);
+        return ApiResponse::success(new UserResource($user), "User created successfully", 201);
     }
 
     public function show(User $user)
     {
-        return ApiResponse::success(new UserResource($user),"User Retrieved successfully");
+        return ApiResponse::success(new UserResource($user), "User Retrieved successfully");
     }
 
     public function update(UserRequest $request, User $user)
     {
         $user = $this->service->update($user, $request->validated());
-        return ApiResponse::success(new UserResource($user),"User Updated successfully");
+        return ApiResponse::success(new UserResource($user), "User Updated successfully");
     }
 
     public function destroy(User $user)
     {
         $this->service->delete($user);
-        return ApiResponse::success([],"User Deleted successfully" , 204);
+        return ApiResponse::success([], "User Deleted successfully", 204);
     }
 
     public function storeBulkV1(UserBulkRequest $request)
     {
         $response = $this->bulkService->createBulk($request->validated());
-        return ApiResponse::success($response,"Users created successfully",201);
+        return ApiResponse::success($response, "Users created successfully", 201);
     }
+
     public function storeBulkV2(UserBulkRequestV2 $request)
     {
         $response = $this->bulkService->processBulkCreation($request->validated());
-        return ApiResponse::success(new BulkUserImportResource($response),"Users created successfully",201);
+        return ApiResponse::success(new BulkUserImportResource($response), "Users created successfully", 201);
     }
 }

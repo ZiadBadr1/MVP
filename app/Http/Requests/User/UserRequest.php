@@ -30,6 +30,10 @@ class UserRequest extends FormRequest
             'password' => $this->isMethod('post')
                 ? 'required|string|min:6'
                 : 'nullable|string|min:6',
+            'role' => [
+                $this->isMethod('post') ? 'nullable' : 'required',
+                'exists:roles,name',
+            ],
         ];
     }
 }
