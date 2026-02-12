@@ -3,6 +3,7 @@
 namespace App\Services\User;
 
 use App\Models\User;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\DB;
 
@@ -10,7 +11,11 @@ class UserService
 {
     public function getAll($count = 10)
     {
-        return User::paginate($count);
+        $page = request()->get('page', 1);
+        $cacheKey = "users_page_{$page}_count_{$count}";
+        return Cache::tags(['users'])->remember($cacheKey, 3600, function () use ($count) {
+            return User::paginate($count);
+        });
     }
 
     public function create(array $data): User

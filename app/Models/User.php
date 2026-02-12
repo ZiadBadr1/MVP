@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Observers\CacheObserver;
 use App\Observers\ModelActivityObserver;
 use App\Observers\StatisticObserver;
 use App\Traits\HasSensitiveLogData;
@@ -12,7 +13,7 @@ use Illuminate\Notifications\Notifiable;
 use Spatie\Permission\Traits\HasRoles;
 use Tymon\JWTAuth\Contracts\JWTSubject;
 
-#[ObservedBy([ModelActivityObserver::class, StatisticObserver::class])]
+#[ObservedBy([ModelActivityObserver::class, StatisticObserver::class, CacheObserver::class])]
 class User extends Authenticatable implements JWTSubject
 {
     use HasFactory, Notifiable, HasRoles;

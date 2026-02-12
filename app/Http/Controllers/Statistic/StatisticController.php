@@ -10,6 +10,7 @@ use Illuminate\Http\Request;
 use Carbon\Carbon;
 use Illuminate\Routing\Controllers\HasMiddleware;
 use Illuminate\Routing\Controllers\Middleware;
+use Illuminate\Support\Facades\Cache;
 
 class StatisticController extends Controller implements HasMiddleware
 {
@@ -24,12 +25,21 @@ class StatisticController extends Controller implements HasMiddleware
     /**
      * Handle the incoming request.
      */
+
     public function __invoke(Request $request)
     {
-        $today = Carbon::today();
-        $statistic = DailyStatistic::whereDate('date', $today)->first();
-        return ApiResponse::success(new StatisticResource($statistic),"This is Today Statistic");
+        $today = Carbon::today()->toDateString();
+
+        $statistic = Cache::remember(
+            "daily_statistic_$today",
+            now()->addMinutes(10),
+            function () use ($today) {
+                return DailyStatistic::whereDate('date', $today)->first();
+            }
+        );
+        return ApiResponse::success(new StatisticResource($statistic), "This is Today Statistic");
     }
+
 
 
 }

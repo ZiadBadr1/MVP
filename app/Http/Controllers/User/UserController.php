@@ -37,8 +37,11 @@ class UserController extends Controller implements HasMiddleware
 
     public function index(Request $request)
     {
+        $start = microtime(true);
         $users = $this->service->getAll($request->count);
-        return ApiResponse::success($users, "This is all users");
+        $end = microtime(true);
+        $executionTime = ($end - $start) * 1000;
+        return ApiResponse::success($users, "Loaded in {$executionTime} ms");
     }
 
     public function store(UserRequest $request)
