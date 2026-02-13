@@ -11,7 +11,6 @@ class CacheObserver
     private function clearCache(User $user): void
     {
         $tenantId = $user->tenant_id;
-        dd($tenantId);
         Cache::tags(["users", "tenant_{$tenantId}"])->flush();
         $today = Carbon::today()->toDateString();
         Cache::forget("daily_statistic_{$tenantId}_{$today}");
