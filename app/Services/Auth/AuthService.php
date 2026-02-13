@@ -11,19 +11,18 @@ class AuthService
 {
     public function login(array $data)
     {
-        try {
-            if (! $token = JWTAuth::attempt($data)) {
-                return [
-                    'success' => false,
-                    'message' => 'invalid_credentials'
-                ];
-            }
-        } catch (JWTException $e) {
-            return ['error' => 'could_not_create_token'];
+        $user = User::where('email', $data['email'])->first();
+
+        if (!$user) {
+            return ['success' => false, 'message' => 'Invalid credentials'];
+        }
+
+        if (! $token = JWTAuth::claims(['tenant_id' => $user->tenant_id])->attempt($data)) {
+            return ['success' => false, 'message' => 'Invalid credentials'];
         }
 
         return [
-            'user' => new UserResource(auth()->user()),
+            'user' => new UserResource($user),
             'token' => $token,
             'expires_in' => auth()->factory()->getTTL() * 60,
         ];

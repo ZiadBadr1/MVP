@@ -1,6 +1,7 @@
 <?php
 
 use App\Models\DailyStatistic;
+use App\Models\Tenant;
 use Illuminate\Foundation\Inspiring;
 use Illuminate\Support\Facades\Artisan;
 
@@ -9,7 +10,12 @@ Artisan::command('inspire', function () {
 })->purpose('Display an inspiring quote')->hourly();
 
 Schedule::call(function () {
-    DailyStatistic::firstOrCreate([
-        'date' => now()->toDateString(),
-    ]);
+    $tenants = Tenant::all();
+
+    foreach ($tenants as $tenant) {
+        DailyStatistic::firstOrCreate([
+            'date' => now()->toDateString(),
+            'tenant_id' => $tenant->id,
+        ]);
+    }
 })->dailyAt('00:00')->timezone('GMT');

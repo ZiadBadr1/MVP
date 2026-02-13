@@ -19,6 +19,7 @@ class RolesAndPermissionsSeeder extends Seeder
             'view_statistics',
             'manage_roles',
             'manage_permissions',
+            'manage_tenant',
         ];
 
         foreach ($permissions as $permission) {
@@ -26,11 +27,25 @@ class RolesAndPermissionsSeeder extends Seeder
         }
 
         // Roles
+        $super = Role::firstOrCreate(['name' => 'super_admin', 'guard_name' => 'api']);
         $admin = Role::firstOrCreate(['name' => 'admin', 'guard_name' => 'api']);
         $manager = Role::firstOrCreate(['name' => 'manager', 'guard_name' => 'api']);
         $user = Role::firstOrCreate(['name' => 'user', 'guard_name' => 'api']);
 
-        $admin->givePermissionTo(Permission::where('guard_name', 'api')->get());
+        $super->givePermissionTo([
+            'manage_tenant',
+            'view_statistics',
+            'create_user',
+        ]);
+
+        $admin->givePermissionTo([
+            'create_user',
+            'update_user',
+            'delete_user',
+            'view_statistics',
+            'manage_roles',
+            'manage_permissions',
+        ]);
 
         $manager->givePermissionTo([
             'create_user',

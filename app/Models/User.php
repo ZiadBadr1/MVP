@@ -5,9 +5,11 @@ namespace App\Models;
 use App\Observers\CacheObserver;
 use App\Observers\ModelActivityObserver;
 use App\Observers\StatisticObserver;
+use App\Traits\BelongsToTenant;
 use App\Traits\HasSensitiveLogData;
 use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Spatie\Permission\Traits\HasRoles;
@@ -18,6 +20,7 @@ class User extends Authenticatable implements JWTSubject
 {
     use HasFactory, Notifiable, HasRoles;
     use HasSensitiveLogData;
+    use BelongsToTenant;
 
     const DEFAULTRULE = "user";
     /**
@@ -29,6 +32,8 @@ class User extends Authenticatable implements JWTSubject
         'name',
         'email',
         'password',
+        'tenant_id',
+        'is_super_admin',
     ];
     protected $guard_name = 'api';
     /**
@@ -78,5 +83,14 @@ class User extends Authenticatable implements JWTSubject
         return [
             'password'
         ];
+    }
+    public function tenant(): BelongsTo
+    {
+        return $this->belongsTo(Tenant::class);
+    }
+
+    public function isSuperAdmin(): bool
+    {
+        return $this->is_super_admin;
     }
 }

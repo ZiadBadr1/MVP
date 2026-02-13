@@ -18,9 +18,13 @@ class UserPolicy
     /**
      * Determine whether the user can view the model.
      */
-    public function view(User $user, User $model): bool
+    public function view(User $authUser, User $user): bool
     {
-        return false;
+        if ($authUser->is_super_admin) {
+            return true;
+        }
+
+        return $authUser->tenant_id === $user->tenant_id;
     }
 
     /**
@@ -28,22 +32,39 @@ class UserPolicy
      */
     public function create(User $user): bool
     {
-        return false;
+        return true;
     }
 
     /**
      * Determine whether the user can update the model.
      */
+
     public function update(User $authUser, User $user): bool
     {
-        return $authUser->id === $user->id || $authUser->hasRole('admin');
+        if ($authUser->is_super_admin) {
+            return true;
+        }
+
+        return $authUser->tenant_id === $user->tenant_id
+            && (
+                $authUser->id === $user->id
+                || $authUser->hasRole('admin')
+            );
     }
     /**
      * Determine whether the user can delete the model.
      */
+
     public function delete(User $authUser, User $user): bool
     {
-        return $authUser->hasRole('admin') && $authUser->id !== $user->id;
+        if ($authUser->is_super_admin) {
+            return true;
+        }
+        return $authUser->tenant_id === $user->tenant_id
+            && (
+                $authUser->id === $user->id
+                || $authUser->hasRole('admin')
+            );
     }
 
     /**

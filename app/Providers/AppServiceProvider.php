@@ -5,6 +5,7 @@ namespace App\Providers;
 use App\Models\User;
 use App\Observers\ModelActivityObserver;
 use App\Observers\StatisticObserver;
+use App\Services\Tenant\TenantService;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
@@ -14,7 +15,9 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
-        //
+        $this->app->singleton(TenantService::class, function () {
+            return new TenantService();
+        });
     }
 
     /**

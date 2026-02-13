@@ -26,8 +26,7 @@ class ModelActivityObserver
     protected function logActivity($model, string $actionType, array $oldData = [], array $newData = []):void
     {
         $metadata = $this->sanitizeLogData($model, $oldData, $newData);
-
-        $this->createActivityLog($actionType, $model, $metadata);
+        $this->createActivityLog($actionType, $model, $metadata,$model->tenant_id ?? null);
     }
 
     protected function getActionType($model, $action):string
@@ -35,12 +34,13 @@ class ModelActivityObserver
         $class = class_basename($model);
         return strtoupper("{$class}_$action");
     }
-    protected function createActivityLog(string $actionType,$model, array $metadata): void {
+    protected function createActivityLog(string $actionType,$model, array $metadata,int $tenantId =null ): void {
         ActivityLog::create([
             'action_type' => $actionType,
             'user_id' => Auth::id() ?? null,
             'model' => get_class($model),
             'metadata' => $metadata,
+            'tenant_id' => $tenantId
         ]);
     }
     protected function sanitizeLogData($model, array $oldData, array $newData): array

@@ -2,6 +2,7 @@
 
 namespace App\Http\Resources\Auth;
 
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
@@ -19,7 +20,7 @@ class UserResource extends JsonResource
             'name' => $this['name'],
             'email' => $this['email'],
             'role' => $this->getRoleNames()->first(),
-            'created_at' => $this['created_at']->diffForHumans(),
+            'created_at' => Carbon::parse($this->created_at)->diffForHumans(),
         ];
     }
 }

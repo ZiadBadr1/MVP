@@ -88,6 +88,7 @@ class ProcessBulkUsers implements ShouldQueue
             'name' => $user['name'],
             'email' => $user['email'],
             'password' => $password,
+            'tenant_id' => auth()->user()->tenant_id,
         ]);
         UserCreated::dispatch($user);
         $roleToAssign = $user['role'] ?? User::DEFAULTRULE;

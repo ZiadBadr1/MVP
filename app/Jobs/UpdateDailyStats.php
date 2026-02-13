@@ -18,7 +18,8 @@ class UpdateDailyStats implements ShouldQueue
      * Create a new job instance.
      */
     public function __construct(
-        public string $column
+        public string $column,
+        public int|null $tenantId
     ) {}
 
     /**
@@ -28,9 +29,16 @@ class UpdateDailyStats implements ShouldQueue
     {
         $date = now()->toDateString();
 
-        DailyStatistic::updateOrInsert(
-            ['date' => $date],
-            [$this->column => DB::raw("`{$this->column}` + 1")]
-        );
+        $affected = DailyStatistic::where('tenant_id', $this->tenantId)
+            ->where('date', $date)
+            ->increment($this->column);
+
+        if ($affected === 0) {
+            DailyStatistic::create([
+                'tenant_id' => $this->tenantId,
+                'date' => $date,
+                $this->column => 1,
+            ]);
+        }
     }
 }

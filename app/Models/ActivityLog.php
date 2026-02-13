@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class ActivityLog extends Model
 {
-    protected $fillable = ['action_type', 'user_id', 'metadata', 'model'];
+    protected $fillable = ['action_type', 'user_id', 'metadata', 'model', 'tenant_id'];
     protected $casts = [
         'metadata' => 'array',
     ];

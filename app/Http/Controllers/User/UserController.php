@@ -29,6 +29,7 @@ class UserController extends Controller implements HasMiddleware
     {
         return [
             new Middleware('auth:api'),
+            new Middleware('tenant'),
             new Middleware('permission:create_user', only: ['store', 'storeBulkV1', 'storeBulkV2']),
             new Middleware('permission:update_user', only: ['update']),
             new Middleware('permission:delete_user', only: ['destroy']),
@@ -47,12 +48,13 @@ class UserController extends Controller implements HasMiddleware
     public function store(UserRequest $request)
     {
         $user = $this->service->create($request->validated());
-        UserCreated::dispatch($user);
+        UserCreated::dispatch($user,$user->tenant_id);
         return ApiResponse::success(new UserResource($user), "User created successfully", 201);
     }
 
     public function show(User $user)
     {
+        $this->authorize('view', $user);
         return ApiResponse::success(new UserResource($user), "User Retrieved successfully");
     }
 

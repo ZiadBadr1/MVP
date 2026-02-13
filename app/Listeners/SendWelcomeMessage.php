@@ -26,19 +26,21 @@ class SendWelcomeMessage implements ShouldQueue
     public function handle(UserCreated $event): void
     {
         $user = $event->user;
+        $tenantId = $event->tenantId;
         try {
             $user->notify(new WelcomeNotification());
-
             MessageLog::create([
                 'user_id' => $user->id,
                 'message_type' => 'welcome_email',
                 'status' => 'success',
+                'tenant_id' => $tenantId,
             ]);
         } catch (\Throwable $e) {
             MessageLog::create([
                 'user_id' => $user->id,
                 'message_type' => 'welcome_email',
                 'status' => 'failed',
+                'tenant_id' => $tenantId,
             ]);
             throw $e;
         }

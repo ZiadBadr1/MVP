@@ -25,6 +25,7 @@ class SendBulkWelcomeEmails implements ShouldQueue
                             'user_id' => $user->id,
                             'message_type' => 'welcome_email',
                             'status' => 'success',
+                            'tenant_id' => $user->tenant_id,
                         ]);
 
                     } catch (\Throwable $e) {
@@ -32,6 +33,7 @@ class SendBulkWelcomeEmails implements ShouldQueue
                             'user_id' => $user->id,
                             'message_type' => 'welcome_email',
                             'status' => 'failed',
+                            'tenant_id' => $user->tenant_id,
                         ]);
                     }
                 }

@@ -18,6 +18,7 @@ class ActivityLogger
             'metadata'    => [
                 'new'          => $data,
             ],
+            'tenant_id' => $model->tenant_id
         ]);
     }
 }

@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests\User;
 
+use App\Models\Tenant;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
@@ -18,7 +19,7 @@ class UserRequest extends FormRequest
     public function rules(): array
     {
         $userId = $this->route('user')?->id;
-
+        $authUser = auth()->user();
         return [
             'name' => 'required|string|max:255',
             'email' => [
@@ -34,6 +35,8 @@ class UserRequest extends FormRequest
                 $this->isMethod('post') ? 'nullable' : 'required',
                 'exists:roles,name',
             ],
+            'tenant_id' => [$authUser->isSuperAdmin() ?   'required' : 'nullable',
+                'exists:tenants,id'],
         ];
     }
 }
